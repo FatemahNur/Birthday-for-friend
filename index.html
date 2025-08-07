@@ -2,8 +2,10 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
   <title>Happy Birthday Guruseva!</title>
+  <meta name="description" content="A special birthday surprise for Guruseva Aulak 🎉" />
+
   <style>
     * {
       margin: 0;
@@ -14,7 +16,7 @@
     body {
       font-family: 'Arial', sans-serif;
       background: linear-gradient(135deg, #16222A, #3A6073);
-      height: 100vh;
+      min-height: 100vh;
       display: flex;
       flex-direction: column;
       justify-content: center;
@@ -23,21 +25,38 @@
       text-align: center;
       overflow: hidden;
       position: relative;
+      touch-action: manipulation;
     }
 
     .container {
-      max-width: 700px;
-      padding: 40px;
+      max-width: 90vw;
+      width: 90%;
+      padding: 30px 20px;
       background: rgba(0, 0, 0, 0.3);
       border-radius: 20px;
       backdrop-filter: blur(10px);
-      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
       z-index: 10;
       animation: fadeInUp 1.5s ease-out;
+      overflow-y: auto;
+      max-height: 80vh;
+      scroll-behavior: smooth;
+    }
+
+    /* Scrollbar Styling (for Webkit) */
+    .container::-webkit-scrollbar {
+      width: 6px;
+    }
+    .container::-webkit-scrollbar-track {
+      background: rgba(255, 255, 255, 0.1);
+    }
+    .container::-webkit-scrollbar-thumb {
+      background: #FF69B4;
+      border-radius: 10px;
     }
 
     h1 {
-      font-size: 3.5em;
+      font-size: 2.8em;
       margin-bottom: 15px;
       text-shadow: 2px 4px 8px rgba(0, 0, 0, 0.5);
     }
@@ -48,13 +67,14 @@
     }
 
     p {
-      font-size: 1.2em;
+      font-size: 1.15em;
       line-height: 1.7;
       margin: 15px 0;
+      padding: 0 10px;
     }
 
     .timer {
-      font-size: 3em;
+      font-size: 2.8em;
       margin: 25px 0;
       font-weight: bold;
       color: #FFD700;
@@ -78,9 +98,10 @@
       box-shadow: 0 6px 15px rgba(0, 0, 0, 0.3);
       transition: all 0.3s;
       font-weight: bold;
+      min-width: 250px;
     }
 
-    button:hover {
+    button:hover, button:active {
       background: #FF1493;
       transform: scale(1.08);
     }
@@ -88,6 +109,34 @@
     button:disabled {
       opacity: 0.6;
       cursor: not-allowed;
+    }
+
+    /* Scroll Indicator (down arrow) */
+    .scroll-down {
+      position: absolute;
+      bottom: 30px;
+      left: 50%;
+      transform: translateX(-50%);
+      color: #fff;
+      font-size: 1.5em;
+      opacity: 0.8;
+      animation: bounce 2s infinite;
+      z-index: 20;
+    }
+
+    @keyframes bounce {
+      0%, 20% {
+        transform: translateX(-50%) translateY(0);
+      }
+      40% {
+        transform: translateX(-50%) translateY(-10px);
+      }
+      60% {
+        transform: translateX(-50%) translateY(0);
+      }
+      80%, 100% {
+        transform: translateX(-50%) translateY(10px);
+      }
     }
 
     @keyframes fadeInUp {
@@ -114,19 +163,40 @@
       opacity: 0;
       z-index: -1;
     }
+
+    /* Responsive Adjustments */
+    @media (max-width: 480px) {
+      h1 {
+        font-size: 2.3em;
+      }
+      p {
+        font-size: 1.1em;
+      }
+      .timer {
+        font-size: 2.3em;
+      }
+      .container {
+        padding: 20px 15px;
+      }
+    }
   </style>
 </head>
 <body>
 
+  <!-- Confetti Container -->
   <div id="confetti-container"></div>
 
+  <!-- Scroll Down Indicator -->
+  <div class="scroll-down">↓</div>
+
+  <!-- Main Content -->
   <div class="container">
     <h1>🎉 Surprise, <span class="highlight">Guruseva!</span></h1>
 
     <!-- 10-Second Countdown -->
     <div id="countdown" class="timer">10</div>
 
-    <!-- Message After Countdown -->
+    <!-- Birthday Message (Appears After Countdown) -->
     <div id="after-countdown" class="after-countdown">
       <p>
         Happy Birthday to one of the realest people in my life. 🕛🎉<br><br>
@@ -143,14 +213,14 @@
         Enjoy every moment of your birthday. You’ve earned it. 🎂💯<br><br>
 
         With all my heart,<br>
-        <strong>Guruseva Aulak</strong> 💖
+        <strong>[Your Name]</strong> 💖
       </p>
       <button id="play-audio">🎵 Tap to Play Music & Celebrate!</button>
     </div>
   </div>
 
   <!-- Audio -->
-  <audio id="birthday-audio">
+  <audio id="birthday-audio" preload="auto">
     <source src="happy-birthday-hooray-217886.mp3" type="audio/mpeg">
   </audio>
 
@@ -160,14 +230,19 @@
     const audio = document.getElementById('birthday-audio');
     const playButton = document.getElementById('play-audio');
     const confettiContainer = document.getElementById('confetti-container');
+    const scrollDown = document.querySelector('.scroll-down');
 
-    // Start from 10 seconds
+    // Hide scroll indicator after first scroll
+    document.querySelector('.container').addEventListener('scroll', () => {
+      scrollDown.style.opacity = '0';
+      scrollDown.style.transition = 'opacity 0.5s';
+    });
+
+    // 10-second countdown
     let timeLeft = 10;
 
-    // Update every second
     const timer = setInterval(() => {
       timeLeft--;
-
       countdownEl.textContent = timeLeft;
 
       if (timeLeft <= 0) {
@@ -178,26 +253,27 @@
         // Change background
         document.body.style.background = 'linear-gradient(135deg, #FF9A8B, #FF6A88, #FF99AC)';
 
-        // Play music & confetti when button is tapped
-        playButton.addEventListener('click', () => {
-          audio.play()
-            .then(() => {
-              playButton.textContent = "🎶 Music Playing... Enjoy Your Day! 🎉";
-              playButton.disabled = true;
-            })
-            .catch(err => {
-              console.log("Audio play failed:", err);
-              alert("🎵 Please tap again! Browsers sometimes block sound on first try.");
-            });
-          createConfetti();
-        });
+        // Show scroll hint briefly
+        setTimeout(() => {
+          scrollDown.style.opacity = '0.7';
+        }, 1000);
 
-        // Also launch confetti automatically (with user gesture)
+        // Confetti
         createConfetti();
+
+        // Audio on tap
+        playButton.addEventListener('click', () => {
+          audio.play().then(() => {
+            playButton.textContent = "🎶 Music Playing... Enjoy Your Day! 🎉";
+            playButton.disabled = true;
+          }).catch(err => {
+            alert("🔇 Tap again! Some browsers block sound until you interact.");
+          });
+        });
       }
     }, 1000);
 
-    // Create confetti
+    // Create Confetti
     function createConfetti() {
       const colors = ['#ff0000', '#00ff00', '#0000ff', '#ffff00', '#ff00ff', '#ffa500', '#ff69b4', '#ffffff'];
       for (let i = 0; i < 200; i++) {
