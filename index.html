@@ -13,7 +13,7 @@
 
     body {
       font-family: 'Arial', sans-serif;
-      background: linear-gradient(135deg, #FF9A8B, #FF6A88, #FF99AC);
+      background: linear-gradient(135deg, #16222A, #3A6073);
       height: 100vh;
       display: flex;
       flex-direction: column;
@@ -38,7 +38,7 @@
 
     h1 {
       font-size: 3.5em;
-      margin-bottom: 20px;
+      margin-bottom: 15px;
       text-shadow: 2px 4px 8px rgba(0, 0, 0, 0.5);
     }
 
@@ -53,8 +53,21 @@
       margin: 15px 0;
     }
 
+    .timer {
+      font-size: 3em;
+      margin: 25px 0;
+      font-weight: bold;
+      color: #FFD700;
+      text-shadow: 0 0 15px rgba(255, 215, 0, 0.8);
+    }
+
+    .after-countdown {
+      display: none;
+      animation: popIn 1.2s ease-out;
+    }
+
     button {
-      margin: 30px auto;
+      margin: 25px auto;
       padding: 14px 30px;
       font-size: 1.3em;
       background: #FF69B4;
@@ -75,7 +88,6 @@
     button:disabled {
       opacity: 0.6;
       cursor: not-allowed;
-      transform: scale(1);
     }
 
     @keyframes fadeInUp {
@@ -89,6 +101,12 @@
       }
     }
 
+    @keyframes popIn {
+      0% { opacity: 0; transform: scale(0.9); }
+      60% { transform: scale(1.05); }
+      100% { opacity: 1; transform: scale(1); }
+    }
+
     .confetti {
       position: absolute;
       width: 12px;
@@ -100,32 +118,35 @@
 </head>
 <body>
 
-  <!-- Confetti Container -->
   <div id="confetti-container"></div>
 
-  <!-- Main Content -->
   <div class="container">
-    <h1>🎉 Happy Birthday, <span class="highlight">Guruseva Aulak!</span></h1>
+    <h1>🎉 Surprise, <span class="highlight">Guruseva!</span></h1>
 
-    <p>
-      Happy Birthday to one of the realest people in my life. 🕛🎉<br><br>
+    <!-- 10-Second Countdown -->
+    <div id="countdown" class="timer">10</div>
 
-      It’s officially your day, and I couldn’t let this moment pass without letting you know just how much I appreciate you. You’ve been a constant in my life — the kind of friend who shows up, listens without judgment, and brings calm even in the chaos.<br><br>
+    <!-- Message After Countdown -->
+    <div id="after-countdown" class="after-countdown">
+      <p>
+        Happy Birthday to one of the realest people in my life. 🕛🎉<br><br>
 
-      You’re more than just a friend — you’re like a brother to me. Someone I can laugh with, vent to, and count on without thinking twice. That kind of bond is rare, and I don’t take it for granted. You’ve stood by me in ways not everyone would, and I’ll always be grateful for your loyalty and your heart.<br><br>
+        It’s officially your day, and I couldn’t let this moment pass without letting you know just how much I appreciate you. You’ve been a constant in my life — the kind of friend who shows up, listens without judgment, and brings calm even in the chaos.<br><br>
 
-      I hope this year brings you everything you’ve been working towards — success, peace of mind, and happiness that feels real and lasting. You deserve all of it.<br><br>
+        You’re more than just a friend — you’re like a brother to me. Someone I can laugh with, vent to, and count on without thinking twice. That kind of bond is rare, and I don’t take it for granted. You’ve stood by me in ways not everyone would, and I’ll always be grateful for your loyalty and your heart.<br><br>
 
-      Thanks for being exactly who you are — solid, genuine, and one of the best people I know.<br>
-      I’ll always root for you, from the sidelines, like family does.<br><br>
+        I hope this year brings you everything you’ve been working towards — success, peace of mind, and happiness that feels real and lasting. You deserve all of it.<br><br>
 
-      Enjoy every moment of your birthday. You’ve earned it. 🎂💯<br><br>
+        Thanks for being exactly who you are — solid, genuine, and one of the best people I know.<br>
+        I’ll always root for you, from the sidelines, like family does.<br><br>
 
-      With all my heart,<br>
-      <strong>[Your Name]</strong> 💖
-    </p>
+        Enjoy every moment of your birthday. You’ve earned it. 🎂💯<br><br>
 
-    <button id="play-audio">🎵 Tap to Play Music & Celebrate!</button>
+        With all my heart,<br>
+        <strong>Guruseva Aulak</strong> 💖
+      </p>
+      <button id="play-audio">🎵 Tap to Play Music & Celebrate!</button>
+    </div>
   </div>
 
   <!-- Audio -->
@@ -134,11 +155,49 @@
   </audio>
 
   <script>
+    const countdownEl = document.getElementById('countdown');
+    const afterCountdownEl = document.getElementById('after-countdown');
     const audio = document.getElementById('birthday-audio');
-    const button = document.getElementById('play-audio');
+    const playButton = document.getElementById('play-audio');
     const confettiContainer = document.getElementById('confetti-container');
 
-    // Create confetti instantly
+    // Start from 10 seconds
+    let timeLeft = 10;
+
+    // Update every second
+    const timer = setInterval(() => {
+      timeLeft--;
+
+      countdownEl.textContent = timeLeft;
+
+      if (timeLeft <= 0) {
+        clearInterval(timer);
+        countdownEl.style.display = 'none';
+        afterCountdownEl.style.display = 'block';
+
+        // Change background
+        document.body.style.background = 'linear-gradient(135deg, #FF9A8B, #FF6A88, #FF99AC)';
+
+        // Play music & confetti when button is tapped
+        playButton.addEventListener('click', () => {
+          audio.play()
+            .then(() => {
+              playButton.textContent = "🎶 Music Playing... Enjoy Your Day! 🎉";
+              playButton.disabled = true;
+            })
+            .catch(err => {
+              console.log("Audio play failed:", err);
+              alert("🎵 Please tap again! Browsers sometimes block sound on first try.");
+            });
+          createConfetti();
+        });
+
+        // Also launch confetti automatically (with user gesture)
+        createConfetti();
+      }
+    }, 1000);
+
+    // Create confetti
     function createConfetti() {
       const colors = ['#ff0000', '#00ff00', '#0000ff', '#ffff00', '#ff00ff', '#ffa500', '#ff69b4', '#ffffff'];
       for (let i = 0; i < 200; i++) {
@@ -164,25 +223,9 @@
 
           animation.onfinish = () => confetti.remove();
           document.body.appendChild(confetti);
-        }, i * 15);
+        }, i * 10);
       }
     }
-
-    // Run confetti as soon as page loads
-    createConfetti();
-
-    // Play music when button is tapped
-    button.addEventListener('click', () => {
-      audio.play()
-        .then(() => {
-          button.textContent = "🎶 Music Playing... Enjoy Your Day! 🎉";
-          button.disabled = true;
-        })
-        .catch(err => {
-          console.log("Audio play failed:", err);
-          alert("🎵 Please tap again! Browsers sometimes need a second tap to play sound.");
-        });
-    });
   </script>
 </body>
 </html>
